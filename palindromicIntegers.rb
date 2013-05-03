@@ -1,4 +1,9 @@
 =begin
+
+This was my first practice problem, I am not refactoring it because I want to see my
+progress as time goes on, and the patterns that I develop.
+
+
 ****PALINDROMIC INTEGERS****
 1. Prompt for two integers. These two integers constitute the range of integers 
 (inclusive) of the integers that will be checked.

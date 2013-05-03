@@ -112,6 +112,3 @@ description
 word = prompt_for_input
 secret_word = underscore_word(word)
 prompt_for_guess(word, secret_word, 0, [])
-
-
-
