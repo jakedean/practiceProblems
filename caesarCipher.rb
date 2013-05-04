@@ -57,8 +57,6 @@ def make_alpha_hash
 end
 
 def find_offset (most_common, alpha_hash, letter_collection)
-  puts most_common
-  puts alpha_hash
   most_com_off = (alpha_hash[most_common] - alpha_hash['e']).abs
   make_offset_hash(most_com_off, alpha_hash, letter_collection)
 end
@@ -76,9 +74,6 @@ def make_offset_hash (most_com_off, alpha_hash, letter_collection)
 end
 
 def decipher (alpha_hash, inverted_alpha, letter_collection)
-  puts 'alpha'
-  puts alpha_hash
-  puts inverted_alpha
   letter_col_len = (letter_collection.length - 1)
   first_arr = []
   for x in 0..letter_col_len
@@ -104,7 +99,5 @@ letter_collection = read_cipher_text
 most_common = get_sorted_letter_hash(letter_collection)
 alpha_hash = make_alpha_hash
 inverted_alpha = find_offset(most_common, alpha_hash, letter_collection)
-puts 'down below'
-puts alpha_hash
 deciphered_text = decipher(alpha_hash, inverted_alpha, letter_collection)
 puts deciphered_text
