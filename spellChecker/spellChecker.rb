@@ -27,6 +27,9 @@ that replacement will be used in the new output file.
 the list of candidates, smaller than -2).
 7. Output the updated spell-checked file.
 
+**This spell checker does have some shortcomings, it does not keep the punctuation and it does
+not deal with words that have apostrohes in them.  I might implement those features in the future
+but it does a pretty good job as is.  Give it a shot.
 =end
 
 
@@ -36,6 +39,7 @@ def prompt_for_file
 	all_text_files = Dir.glob "*.txt"
 	if all_text_files.include? "#{file}"
 		puts 'ok awesome, I will spell check that file for you'
+		return file
 	else
 		puts "I can not find that file in this working directory, let's try again."
 		prompt_for_file
@@ -47,9 +51,9 @@ def strip_punc (line)
 	return line
 end
 
-def read_desired_file (dictionary_array)
+def read_desired_file (file, dictionary_array)
 	final_array = []
-	File.open('sample.txt', 'r') do |f|
+	File.open(file, 'r') do |f|
 		while (line = f.gets)
 			line_array = []
 			stripped_line = strip_punc(line)
@@ -69,21 +73,22 @@ def read_desired_file (dictionary_array)
 	    final_array.push(line_array.join(' ') + "\n")
 	  end 
   end
-  put_data_in_string(final_array)
+  put_data_in_string(final_array, file)
 end
 
-def put_data_in_string (final_array)
+def put_data_in_string (final_array, file)
 	final_arr_len = (final_array.length - 1)
 	final_str = ""
 	for x in 0..final_arr_len
 		final_str.concat(final_array[x])
 	end
-	write_desired_file(final_str)
+	write_desired_file(file, final_str)
 end
 
 
-def write_desired_file (final_str)
-	File.open("sample-chk.txt", "w") do |f|
+def write_desired_file (file, final_str)
+	write_file = file.split('.')[0]
+	File.open("#{write_file}-chk.txt", "w") do |f|
 		f.write(final_str)
 	end
 end
@@ -196,7 +201,7 @@ def read_dictionary_into_array
 	end
 end
 
-
+file = prompt_for_file
 dictionary_array = read_dictionary_into_array
-final_array = read_desired_file(dictionary_array)
+final_array = read_desired_file(file, dictionary_array)
 puts final_array
