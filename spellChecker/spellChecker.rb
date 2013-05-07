@@ -63,10 +63,10 @@ def read_desired_file (dictionary_array)
 	      else
 	        choices = get_choices(dictionary_array, separated_line[x])
 	        new_word = user_want_to_change(separated_line, separated_line[x], choices)
-	        line_array.push(separated_line[x])
+	        line_array.push(new_word)
 	      end
 	    end
-	    final_array.push(line_array.join(' '))
+	    final_array.push(line_array.join(' ') + "\n")
 	  end 
   end
   put_data_in_string(final_array)
@@ -86,40 +86,47 @@ def write_desired_file (final_str)
 	File.open("sample-chk.txt", "w") do |f|
 		f.write(final_str)
 	end
-	return final_array
 end
 
 def get_choices (dictionary_array, word)
 	word_len_min = (word.length - 1)
 	word_len = word.length
 	choices = {}
+	first_letter_array = []
+	length_array = []
+	enough_common_array = []
 	choice_counter = 0
-	if word.length > 5
-		num_letters_needed = (word.length - word.length / 3)
-	else
-		num_letters_needed = (word.length - 3)
-	end
 	dic_len = (dictionary_array.length - 1)
   for x in 0..dic_len
   	counter = 0
-  	if test_length(dictionary_array[x].length, word_len) == false
-  		next
-  	end
   	if first_letter(dictionary_array[x], word) == false
   		next
+    else
+    	first_letter_array.push(dictionary_array[x])
   	end
-    if enough_common_letters(dictionary_array[x], word) == false
+  end
+  first_letter_arr_len = (first_letter_array.length - 1) 
+  for y in 0..first_letter_arr_len
+  	if test_length(first_letter_array[y], word_len) == false
+  		next
+    else
+      length_array.push(first_letter_array[y])
+  	end
+  end
+  length_arr_len = (length_array.length - 1)
+  for z in 0..length_arr_len
+    if enough_common_letters(length_array[z], word) == false
     	next
     else
     	choice_counter += 1
-      choices["#{choice_counter}"] = dictionary_array[x]
+      choices["#{choice_counter}"] = length_array[z]
     end
   end
   return choices
 end
 
 def test_length (dictionary_word, word_len)
-	if (dictionary_word > (word_len - 2)) || (dictionary_word > (word_len - 2))
+	if (dictionary_word.length < (word_len - 1)) || (dictionary_word.length > (word_len + 1))
 	  return false
 	else 
 		return true
@@ -127,30 +134,26 @@ def test_length (dictionary_word, word_len)
 end
 
 def first_letter (dictionary_word, word)
-	if dictionary_word[0] != word[0]
-		return false
-	else
+	if dictionary_word[0] == word[0]
 		return true
+	else
+		return false
 	end
 end
 
 def enough_common_letters (dictionary_word, word)
 	counter = 0
-	if (dictionary_word <=> word) == 1
-		w1 = dictionary_word
-		w2 = word
-	else
-		w1 = word
-		w2 = dictionary_word
-	end
-  for x in 00..(w2.length - 1)
-  	if w1.include?(w2[x])
+	dictionary_word_copy = dictionary_word.clone
+	word_len = (word.length - 1)
+  for x in 0..(word_len)
+  	if dictionary_word_copy.include?(word[x])
+  		dictionary_word_copy.slice!(word[x])
   	  counter += 1
   	else
   		next
   	end
   end
-  if counter < 2*(word.length / 3)
+  if counter < (4.to_f/5.to_f)*(word.length)
     return false
   else
   	return true
@@ -197,6 +200,3 @@ end
 dictionary_array = read_dictionary_into_array
 final_array = read_desired_file(dictionary_array)
 puts final_array
-
-
-
