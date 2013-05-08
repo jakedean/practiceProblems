@@ -2,8 +2,13 @@
 
 ***Elevator Game***
 
-This version just goes stright up and down, I made another version that I optimized to do the task
-in fewer steps called elevator-optimized.rb.
+***I realize this version is not realistic I just wanted to try it to learn.****
+
+This is a more optimized version.  I tried to optimize it for the least number of stops not
+nessesarily for the least distance between stops.  That is abviously not lifelike but it is useful
+for the simulation.  ****It is not realistic in the fact that the elevator knows which floor the people 
+want to go to (in reality an elivator only knows if people wan tto go up or down) but for a simulation it
+taught me quite a bit.****
 
 1. Create three classes: Building, Elevator, and Customer.
 2. Equip the building with an elevator. Ask user to customize the number of floors and the 
@@ -25,12 +30,14 @@ class Elevator
 
 	def initialize(total_floors, customers)
 		@current_floor = 0
+		@floor_counter = 0
 		@total_floors = total_floors
 		@direction = 1
 		@stops = 0
 		@customers_inside = []
+		@que = []
 		@customers_waiting = customers
-		stop_or_not
+		check_destinatons
 	end
 
 #----------The Blocks-------------
@@ -43,47 +50,48 @@ class Elevator
 		return lambda { |x| x.start_floor == @current_floor }
 	end
 
-	def on_elev_up_block
-    return lambda { |x| x.finish_floor > @current_floor }
-  end
-
-  def waiting_elev_up_block 
-  	return lambda { |x| x.start_floor > @current_floor }
-  end
-
-  def on_elev_down_block 
-  	return lambda { |x| x.finish_floor < @current_floor }
-  end
-  
-  def waiting_elev_down_block 
-  	return lambda { |x| x.start_floor < @current_floor }
+  def que_up_block
+  	return lambda { |x| x.finish_floor == @floor_counter }
   end
 
 #--------End of Blocks--------------
 
-	def stop_or_not 
-		if @customers_inside.index { |x| x.finish_floor == @current_floor } ||
-      @customers_waiting.index { |x| x.start_floor == @current_floor }
-				@customers_inside.delete_if(&get_off_block)
-				@customers_inside.push(@customers_waiting.select(&get_on_block))
-				@customers_inside.flatten!
-				@customers_waiting.delete_if(&get_on_block)
-				@stops += 1
-				puts "Stoped at floor #{@current_floor} with #{@customers_inside.length} people in the elevator, #{@customers_waiting.length} waiting"
-				move
-		else
-			move
-		end
-	end
+	def check_destinatons
+    if @customers_waiting.index { |x| x.finish_floor == @floor_counter } != nil
+    	puts @customers_waiting.to_s
+    	@que.push(@customers_waiting.select { |x| x.finish_floor == @floor_counter })
+    	@que.flatten!
+	    @que.uniq! { |x| x.start_floor }
+      @que.each { |x| go_to_floor(x.start_floor) }
+      go_to_floor(@floor_counter)
+      @que = []
+      @floor_counter += 1
+      check_destinatons
+    elsif @floor_counter < @total_floors
+    	@floor_counter += 1
+    	check_destinatons
+    elsif @customers_inside.length != 0
+      deliver_straglers
+      check_destinatons
+    else
+    	done
+    end
+  end
 
-	def move
-		if @customers_inside.length == 0 && @customers_waiting.length == 0
-      done 
-		elsif @direction == 1
-			higher_or_not
-		else
-			lower_or_not
-		end
+  def go_to_floor (finish_floor)
+  	@current_floor = finish_floor
+  	@customers_inside.delete_if(&get_off_block)
+		@customers_inside.push(@customers_waiting.select(&get_on_block))
+		@customers_inside.flatten!
+		@customers_waiting.delete_if(&get_on_block)
+		@stops += 1
+		puts "Stoped at floor #{@current_floor} with #{@customers_inside.length} people in the elevator, #{@customers_waiting.length} waiting"
+    
+  end
+
+	def deliver_straglers
+		@customers_inside.sort! { |x,y| y.finish_floor <=> x.finish_floor }
+		@customers_inside.each { |x| go_to_floor(x.finish_floor) }
 	end
 
 	def done 
@@ -91,46 +99,8 @@ class Elevator
 		return
 	end
 
-#---------Continuing going eithor up or down?---------
-
-  def higher_or_not
-  	if @customers_inside.any? && @customers_inside.index(&on_elev_up_block) != nil || 
-  		@customers_waiting.any? && @customers_waiting.index(&waiting_elev_up_block) != nil
-  		  puts "Currently on #{@current_floor} we are going up!"
-  		  go_up
-  	elsif @customers_inside.length == 0 && @customers_waiting.length == 0
-  		done
-  	else
-      @direction = 0
-  		go_down
-  	end
-  end
-
-  def lower_or_not 
-  	if @customers_inside.any? && @customers_inside.index(&on_elev_down_block) != nil || 
-  		@customers_waiting.any? && @customers_waiting.index(&waiting_elev_down_block) != nil
-  		puts "Currently on #{@current_floor} we are going down!"
-  		go_down
-    elsif @customers_inside.length == 0 && @customers_waiting.length == 0
-  		done
-  	else
-      @direction = 1
-  		go_up
-  	end
-  end
-
-#-----------The execution of moving the elevator---------
-	def go_up
-		@current_floor += 1
-		stop_or_not
-	end
-
-	def go_down
-	  @current_floor -= 1
-		stop_or_not
-	end
-
 end
+
 
 #------------------------My Building Class----------------------------
 
