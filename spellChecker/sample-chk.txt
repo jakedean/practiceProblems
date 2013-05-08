@@ -1,0 +1,4 @@
+The main approach was simple to look at solar output and
+cosmic ray intensity over the last 40 years and compare those
+trends with the graph for global average surface temperature
+not sure if this is going to work we will try though
