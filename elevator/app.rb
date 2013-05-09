@@ -1,0 +1,1 @@
+Shoes.app { button("Click Me") {alert("Good Job")}}
