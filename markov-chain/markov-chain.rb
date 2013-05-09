@@ -3,7 +3,9 @@
 **********Markov Chain**********
 
 This is a very basic Markov chain script. If it completes it will write to a file, and
-if it does not get all the way through it will output the partials tring to the console.   
+if it does not get all the way through it will output the partial string to the console.
+It could be made better if I looked back in the sequence farther than 2 words, but this
+was my first crack at it.   
 
 =end
 
@@ -40,6 +42,7 @@ def read_and_put_in_table (read_file, write_file)
     end
   end
   split_string = file_string.split(' ')
+  puts "the origional file was #{split_string.length} words long"
   markov_chain = {}
   for x in 0...split_string.length
   	if split_string[x + 2] != nil && markov_chain["#{split_string[x]} #{split_string[x+1]}"] == nil
@@ -83,6 +86,7 @@ def write_new_file (markov_chain, split_string, write_file)
       end
     end
   end
+  puts "The final file was #{final_string_arr.length} words long"
   full_string = final_string_arr.join(' ')
   success(full_string, write_file)
 end
