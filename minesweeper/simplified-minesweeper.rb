@@ -1,15 +1,14 @@
+
 =begin
 
 *****Minesweeper*****
 
-This is a simple implemetation of minesweeper.  You are able to sleect the size of 
-your game board.  It is text based, the board will start out with an "H" in each spot
-and as the player plays numbers will be uncovered and if mines are hit the game will 
-be over and the board will be showed.
+This is a simplified implemetation of minesweeper.  When you select a blank "square"
+it will fill in the neighboring blank "squares" that are above below left or right,
+however it will not fill in diagonal ones.  I did that in my other version with 
+recursion, so for the full version check out real-minesweeper.rb.
 
 =end
-
-
 
 class Minesweeper
 
@@ -199,9 +198,7 @@ class Minesweeper
     @ripple_arr.push([row, column])
     if @master_view[(row + @neg_ripple_counter)] != nil &&
       @master_view[(row + @neg_ripple_counter)][column] == 0
-      puts 'in the first one'
     	until ripple_checker((row + @neg_ripple_counter), column) == false do
-    		puts 'got here 1'
         ripple_adder((row + @neg_ripple_counter), column)
         @neg_ripple_counter -= 1
       end
@@ -209,9 +206,7 @@ class Minesweeper
     end
     if @master_view[(row + @pos_ripple_counter)] != nil &&
       @master_view[(row + @pos_ripple_counter)][column] == 0
-        puts 'in the second one' 
       until ripple_checker((row + @pos_ripple_counter), column) == false do
-        puts 'got here2'
     		ripple_adder((row + @pos_ripple_counter), column)
         @pos_ripple_counter += 1
       end
@@ -219,9 +214,7 @@ class Minesweeper
     end
     if @master_view[row] != nil &&
       @master_view[row][(column + @neg_ripple_counter)] == 0
-      puts 'in the hthird one'
     	until ripple_checker(row, (column + @neg_ripple_counter)) == false do
-    		puts 'got here 3'
         ripple_adder(row, (column + @neg_ripple_counter))
         @neg_ripple_counter -= 1
       end
@@ -229,9 +222,7 @@ class Minesweeper
     end
     if @master_view[row] != nil && 
       @master_view[row][(column + @pos_ripple_counter)] == 0
-      puts 'in the forth one'
     	until ripple_checker(row, (column + @pos_ripple_counter)) == false do
-    		puts 'got here 4'
         ripple_adder(row, (column + @pos_ripple_counter))
         @pos_ripple_counter += 1
       end
@@ -258,7 +249,5 @@ my_minesweeper = Minesweeper.new(10)
 my_minesweeper.make_player_view
 my_minesweeper.make_master_view
 master_view, player_view = my_minesweeper.mine_creator
-my_minesweeper.display_view(0)
 my_minesweeper.fill_in_master
-my_minesweeper.display_view(1)
 my_minesweeper.player_move
